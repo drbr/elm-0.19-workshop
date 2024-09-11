@@ -18,7 +18,7 @@ import Html.Events exposing (onClick)
 
 initialModel =
     { tags = Article.tags
-    , selectedTag = "elm"
+    , selectedTag = ""
     , allArticles = Article.feed
     }
 
@@ -96,10 +96,8 @@ viewTag selectedTagName tagName =
 
             else
                 "tag-default"
-    in
-    button
-        [ class ("tag-pill " ++ otherClass)
-        , onClick
+
+        clickMsg =
             { description = "ClickedTag"
             , data =
                 if selectedTagName == tagName then
@@ -108,6 +106,10 @@ viewTag selectedTagName tagName =
                 else
                     tagName
             }
+    in
+    button
+        [ class ("tag-pill " ++ otherClass)
+        , onClick clickMsg
         ]
         [ text tagName ]
 
