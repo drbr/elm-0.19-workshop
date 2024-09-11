@@ -41,8 +41,15 @@ update msg model =
 
 view model =
     let
+        filterFunc article =
+            if model.selectedTag == "" then
+                True
+
+            else
+                List.member model.selectedTag article.tags
+
         articles =
-            List.filter (\article -> List.member model.selectedTag article.tags)
+            List.filter filterFunc
                 model.allArticles
 
         feed =
@@ -92,7 +99,15 @@ viewTag selectedTagName tagName =
     in
     button
         [ class ("tag-pill " ++ otherClass)
-        , onClick { description = "ClickedTag", data = tagName }
+        , onClick
+            { description = "ClickedTag"
+            , data =
+                if selectedTagName == tagName then
+                    ""
+
+                else
+                    tagName
+            }
         ]
         [ text tagName ]
 
