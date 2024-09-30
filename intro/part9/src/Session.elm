@@ -1,14 +1,13 @@
-port module Session
-    exposing
-        ( Session
-        , changes
-        , cred
-        , decode
-        , login
-        , logout
-        , navKey
-        , viewer
-        )
+port module Session exposing
+    ( Session
+    , changes
+    , cred
+    , decode
+    , login
+    , logout
+    , navKey
+    , viewer
+    )
 
 import Browser.Navigation as Nav
 import Json.Decode as Decode exposing (Decoder)
@@ -72,7 +71,7 @@ login newViewer =
     Viewer.encode newViewer
         |> Encode.encode 0
         |> Just
-        |> sendSessionToJavaScript
+        |> storeSession
 
 
 
@@ -81,7 +80,7 @@ login newViewer =
 
 logout : Cmd msg
 logout =
-    sendSessionToJavaScript Nothing
+    storeSession Nothing
 
 
 {-| 👉 TODO 1 of 2: Replace this do-nothing function with a port that sends the
@@ -96,9 +95,7 @@ authentication token to JavaScript.
     it was depending on the old name. Follow the compiler errors to fix them!
 
 -}
-sendSessionToJavaScript : Maybe String -> Cmd msg
-sendSessionToJavaScript maybeAuthenticationToken =
-    Cmd.none
+port storeSession : Maybe String -> Cmd msg
 
 
 
@@ -107,7 +104,7 @@ sendSessionToJavaScript maybeAuthenticationToken =
 
 changes : (Session -> msg) -> Nav.Key -> Sub msg
 changes toMsg key =
-    receiveSessionFromJavaScript (\val -> toMsg (decode key val))
+    onSessionChange (\val -> toMsg (decode key val))
 
 
 {-| 👉 TODO 2 of 2: Replace this do-nothing function with a port that receives the
@@ -122,9 +119,7 @@ authentication token from JavaScript.
     it was depending on the old name. Follow the compiler errors to fix them!
 
 -}
-receiveSessionFromJavaScript : (Value -> msg) -> Sub msg
-receiveSessionFromJavaScript toMsg =
-    Sub.none
+port onSessionChange : (Value -> msg) -> Sub msg
 
 
 decode : Nav.Key -> Value -> Session
